@@ -1,0 +1,24 @@
+# Foundry build and runtime artifacts
+/cache/
+/out/
+/broadcast/
+/coverage/
+/lcov.info
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+
+# IDE and editor files
+/.idea/
+/.vscode/
+*.iml
+*.swp
+*.swo
+*~
+
+# Operating system metadata
+.DS_Store
+Thumbs.db
+Desktop.ini
