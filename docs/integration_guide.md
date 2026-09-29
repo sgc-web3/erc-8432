@@ -1,7 +1,7 @@
-# Integration guide
+# ERC-8432 Integration Guide
 
 This guide follows a record from publication to verification. It explains
-integration decisions rather than restating the [normative specification](erc-draft.md).
+integration decisions rather than restating the [normative specification](erc-8432.md).
 The [getting-started example](getting_started.md) shows how to publish a first
 asset and offer.
 
@@ -70,7 +70,7 @@ The mandatory `RightsSummary` is comparable across schemas: three tri-state
 rights (`UNSPECIFIED`, `YES`, `NO`) and an amount-free `FeeModel`. A zero
 `termsType` means the summary is the complete machine-readable rights
 expression. The one standardized nonzero schema is
-[`generic-license-v1`](erc-draft.md#16-well-known-constants): ABI-encode
+[`generic-license-v1`](erc-8432.md#16-well-known-constants): ABI-encode
 `(bool commercialUse, bool derivativesAllowed, bool attributionRequired,
 string attributionTemplate)` as a single struct. Each boolean must match an
 explicit `YES` or `NO` in the summary; `UNSPECIFIED` is invalid for those
@@ -114,6 +114,6 @@ name records; they do not verify remote chain state. A derivation attestation
 is signed at asset registration and can contain `ParentRef` values for other
 registries/chains. It is distinct from mutable asset claims. Its signature
 authenticates the issuer's statement, not actual use of a parent or an
-authorizing license. Consult the [draft's EIP-712 encoding](erc-draft.md#13-derivation)
+authorizing license. Consult the [ERC-8432 EIP-712 encoding](erc-8432.md#13-derivation)
 before generating or verifying an attestation; the intended registrant and
 complete registration payload are part of the commitment.

@@ -1,6 +1,6 @@
-# Developer documentation
+# ERC-8432 Developer Documentation
 
-Build against the [ERC draft](erc-draft.md), which defines the required ABI and
+Build against the [ERC-8432 specification](erc-8432.md), which defines the required ABI and
 behavior. These guides explain how to use and implement it; they are
 non-normative.
 
@@ -11,7 +11,7 @@ non-normative.
 | [Integration guide](integration_guide.md) | Implement agreement checks, pagination, terms decoding, provenance, and indexing. |
 | [Design decisions](design_decisions.md) | Understand the technical trade-offs and choose tokenization, policy, and extension strategies. |
 | [FAQ](faq.md) | Resolve recurring implementation questions and failure modes. |
-| [ERC draft](erc-draft.md) | Consult the canonical types, rules, schema bytes, test vectors, and security considerations. |
+| [ERC-8432 specification](erc-8432.md) | Consult the canonical types, rules, schema bytes, test vectors, and security considerations. |
 
 The [Solidity interfaces](../src/interfaces/) are importable directly; the
 [reference registry](../src/IPAssetRegistry.sol) illustrates one implementation.

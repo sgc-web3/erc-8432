@@ -1,6 +1,6 @@
-# Implementer FAQ
+# ERC-8432 Implementer FAQ
 
-For exact requirements, consult the [ERC draft](erc-draft.md). For example
+For exact requirements, consult the [ERC-8432 specification](erc-8432.md). For example
 calls, see [getting started](getting_started.md) and the
 [integration guide](integration_guide.md).
 

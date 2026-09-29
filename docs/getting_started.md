@@ -1,7 +1,7 @@
-# Getting started for implementers
+# ERC-8432 Getting Started for Implementers
 
 This walkthrough uses the dependency-free Solidity interface and the reference
-registry. The [ERC draft](erc-draft.md) is authoritative when implementing a
+registry. The [ERC-8432 specification](erc-8432.md) is authoritative when implementing a
 different registry.
 
 ## Build and locate the interfaces
@@ -132,7 +132,7 @@ rights. A true activity result alone does not authorize a particular use.
 
 ## Implementing a different registry
 
-Use the [draft's Specification](erc-draft.md#specification) as the conformance
+Use the [ERC-8432 Specification](erc-8432.md#specification) as the conformance
 checklist. In particular:
 
 - Implement the exact types, selectors, events, and unknown-ID read behavior;

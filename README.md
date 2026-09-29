@@ -1,6 +1,6 @@
-# Onchain IP Asset and License Registry
+# ERC-8432: Onchain IP Asset and License Registry
 
-An ERC draft for recording IP assets, reusable license terms, and verifiable
+ERC-8432 is a draft standard for recording IP assets, reusable license terms, and verifiable
 license agreements across independent registries.
 
 ## Documentation
@@ -9,7 +9,7 @@ Start at the [developer documentation](docs/index.md). It includes an
 [overview](docs/erc_overview.md), [getting started](docs/getting_started.md),
 [integration patterns](docs/integration_guide.md),
 [design decisions](docs/design_decisions.md), and an
-[implementer FAQ](docs/faq.md). The [ERC draft](docs/erc-draft.md) remains the
+[implementer FAQ](docs/faq.md). The [ERC-8432 specification](docs/erc-8432.md) remains the
 authoritative specification, including its canonical interface, schema,
 rationale, compatibility, and security considerations.
 
@@ -30,7 +30,7 @@ audited. Solidity builds without external dependencies.
 
 ## Status
 
-The ERC is a draft. The interface id (`0x72117f80`) and generic schema hash
+ERC-8432 has Draft status. The interface id (`0x72117f80`) and generic schema hash
 (`0x497589298d23e3edf03354027567294825f845d9acccc3812cbb7b7b8dc3f5fa`)
 are checked by the test suite.
 

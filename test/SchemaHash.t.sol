@@ -6,9 +6,9 @@ import {TERMS_TYPE_GENERIC_V1} from "../src/interfaces/IPAssetTypes.sol";
 
 /// @title SchemaHashTest
 /// @notice Reproduces and pins the content-addressed `termsType` of the
-///         canonical generic schema JSON line embedded in the ERC draft.
+///         canonical generic schema JSON line embedded in ERC-8432.
 contract SchemaHashTest is TestBase {
-    string constant DRAFT_PATH = "docs/erc-draft.md";
+    string constant SPEC_PATH = "docs/erc-8432.md";
     bytes constant SCHEMA_PREFIX = bytes("{\"schema\":\"generic-license-v1\",");
 
     error InvalidSchemaLine();
@@ -26,7 +26,7 @@ contract SchemaHashTest is TestBase {
     }
 
     function test_SchemaHash_ExcludesSurroundingMarkdown() public view {
-        bytes memory schema = extractSchema(bytes(vm.readFile(DRAFT_PATH)));
+        bytes memory schema = extractSchema(bytes(vm.readFile(SPEC_PATH)));
         bytes memory document = abi.encodePacked(
             "# Revised introduction\n\n```json\n", schema, "\n```\n\nRevised explanation.\n"
         );
@@ -34,7 +34,7 @@ contract SchemaHashTest is TestBase {
     }
 
     function test_SchemaHash_ExcludesCrLfLineTerminators() public view {
-        bytes memory schema = extractSchema(bytes(vm.readFile(DRAFT_PATH)));
+        bytes memory schema = extractSchema(bytes(vm.readFile(SPEC_PATH)));
         bytes memory document = abi.encodePacked("```json\r\n", schema, "\r\n```\r\n");
         assertEqB32(keccak256(extractSchema(document)), TERMS_TYPE_GENERIC_V1);
     }
@@ -45,7 +45,7 @@ contract SchemaHashTest is TestBase {
     }
 
     function test_SchemaHash_RejectsDuplicateSchema() public {
-        bytes memory schema = extractSchema(bytes(vm.readFile(DRAFT_PATH)));
+        bytes memory schema = extractSchema(bytes(vm.readFile(SPEC_PATH)));
         bytes memory document = abi.encodePacked(schema, "\n", schema, "\n");
         vm.expectRevert(InvalidSchemaLine.selector);
         this.extractSchema(document);
@@ -58,7 +58,7 @@ contract SchemaHashTest is TestBase {
     }
 
     function test_SchemaHash_RejectsSurroundingWhitespace() public {
-        bytes memory schema = extractSchema(bytes(vm.readFile(DRAFT_PATH)));
+        bytes memory schema = extractSchema(bytes(vm.readFile(SPEC_PATH)));
         vm.expectRevert(InvalidSchemaLine.selector);
         this.extractSchema(abi.encodePacked(" ", schema, "\n"));
         vm.expectRevert(InvalidSchemaLine.selector);
@@ -66,7 +66,7 @@ contract SchemaHashTest is TestBase {
     }
 
     function _computeSchemaId() internal view returns (bytes32) {
-        return keccak256(extractSchema(bytes(vm.readFile(DRAFT_PATH))));
+        return keccak256(extractSchema(bytes(vm.readFile(SPEC_PATH))));
     }
 
     function extractSchema(bytes memory document) public pure returns (bytes memory schema) {

@@ -1,6 +1,6 @@
-# Design decisions for implementers
+# ERC-8432 Design Decisions for Implementers
 
-The [ERC draft](erc-draft.md) defines the behavior. This guide explains why
+The [ERC-8432 specification](erc-8432.md) defines the behavior. This guide explains why
 several constraints exist and the trade-offs they create when building a
 registry, token adapter, indexer, or policy module.
 

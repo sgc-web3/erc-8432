@@ -1,6 +1,6 @@
-# Onchain IP Asset and License Registry
+# ERC-8432 Onchain IP Asset and License Registry
 
-This is a non-normative introduction. The [ERC draft](erc-draft.md) defines the
+This is a non-normative introduction. The [ERC-8432 specification](erc-8432.md) defines the
 interface and required behavior.
 
 ## What it records
@@ -41,7 +41,7 @@ terms can be mirrored to another registry under the same `termsId`.
    itself. Terms contain a lifecycle frame, mandatory rights summary, optional
    URI/hash anchor for legal text, and optional schema-specific `rightsData`. The
    `generic-license-v1` schema and its exact hash preimage are in the
-   [draft](erc-draft.md#16-well-known-constants).
+   [specification](erc-8432.md#16-well-known-constants).
 3. The owner or an authorized delegate grants an agreement with
    `createAgreement`, or an eligible caller obtains a `NONE` agreement under
    attached terms with `acquireAgreement`. Both paths check current
@@ -71,7 +71,7 @@ licensed. Asset claims are separate, mutable issuer-attributed records.
 The core does not distribute royalties, collect fees, enforce legal rights,
 traverse derivation graphs, or verify cross-chain state. For ABI, schema bytes,
 lifecycle rules, rationale, backwards compatibility, and security considerations,
-consult the [ERC draft](erc-draft.md).
+consult the [ERC-8432 specification](erc-8432.md).
 
 To build against the interface, start with the [implementer walkthrough](getting_started.md).
 For verification and indexing, see the [integration guide](integration_guide.md);
