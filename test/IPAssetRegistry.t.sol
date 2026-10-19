@@ -456,8 +456,9 @@ contract IPAssetRegistryTest is TestBase {
 
     function test_TransferOwnership_ZeroRecipient_PreservesHookDenial() public {
         bytes32 id = _registerNone(address(this), CONTENT_HASH);
+        bytes32 zeroRecipient = "zero-recipient";
         vmx.expectRevert(
-            abi.encodeWithSelector(IIPAssetRegistry.HookDenied.selector, bytes32("zero-recipient"))
+            abi.encodeWithSelector(IIPAssetRegistry.HookDenied.selector, zeroRecipient)
         );
         reg.transferOwnership(id, address(0));
         assertEqA(reg.ownerOf(id), address(this));
@@ -815,7 +816,7 @@ contract IPAssetRegistryTest is TestBase {
 
         (bool ok, bytes32 reason) = reg.canDerive(id, address(0x4444));
         assertFalse(ok);
-        assertEqB32(reason, bytes32("policy-not-implemented"));
+        assertEqB32(reason, "policy-not-implemented");
     }
 
     function test_AcquireAgreement_ForwardsLicenseParams() public {
@@ -854,11 +855,11 @@ contract IPAssetRegistryTest is TestBase {
         (bool ok, bytes32 r) =
             reg.canTransferAsset(bytes32(0), address(this), address(0));
         assertFalse(ok);
-        assertEqB32(r, bytes32("zero-recipient"));
+        assertEqB32(r, "zero-recipient");
 
         (ok, r) = reg.canTransferAgreement(bytes32(0), address(this), address(0));
         assertFalse(ok);
-        assertEqB32(r, bytes32("zero-recipient"));
+        assertEqB32(r, "zero-recipient");
 
         bytes32 id = _registerNone(address(this), CONTENT_HASH);
         bytes32 t = _registerTermsBasic(0, true);
@@ -866,15 +867,15 @@ contract IPAssetRegistryTest is TestBase {
 
         (ok, r) = reg.canLicense(id, t, address(0), "", bytes32(0));
         assertFalse(ok);
-        assertEqB32(r, bytes32("zero-acquirer"));
+        assertEqB32(r, "zero-acquirer");
 
         (ok, r) = reg.canLicense(id, t, address(0x1), "", bytes32(0));
         assertTrue(ok);
         assertEqB32(r, bytes32(0));
 
-        (ok, r) = reg.canRevoke(bytes32("nope"), address(this), bytes32(0));
+        (ok, r) = reg.canRevoke("nope", address(this), bytes32(0));
         assertFalse(ok);
-        assertEqB32(r, bytes32("agreement-unknown"));
+        assertEqB32(r, "agreement-unknown");
     }
 
     function testFuzz_TransferHooks_DefaultPolicy(
@@ -887,29 +888,30 @@ contract IPAssetRegistryTest is TestBase {
             reg.canTransferAgreement(unknownId, from, to);
         assertTrue(assetOk == (to != address(0)));
         assertTrue(agreementOk == assetOk);
-        assertEqB32(assetReason, to == address(0) ? bytes32("zero-recipient") : bytes32(0));
+        bytes32 expectedReason = "zero-recipient";
+        assertEqB32(assetReason, to == address(0) ? expectedReason : bytes32(0));
         assertEqB32(agreementReason, assetReason);
     }
 
     function test_TransferHooks_IndependentPoliciesForSameId() public {
         TransferPolicyRegistry policy = _useTransferPolicyRegistry();
-        bytes32 id = bytes32("same");
-        policy.setAssetTransferPolicy(bytes32(0), bytes32("asset-denied"));
+        bytes32 id = "same";
+        policy.setAssetTransferPolicy(bytes32(0), "asset-denied");
         (bool ok, bytes32 reason) = reg.canTransferAsset(id, address(this), address(1));
         assertFalse(ok);
-        assertEqB32(reason, bytes32("asset-denied"));
+        assertEqB32(reason, "asset-denied");
         (ok, reason) = reg.canTransferAgreement(id, address(this), address(1));
         assertTrue(ok);
         assertEqB32(reason, bytes32(0));
 
         policy.setAssetTransferPolicy(bytes32(0), bytes32(0));
-        policy.setAgreementTransferPolicy(bytes32(0), bytes32("agreement-denied"));
+        policy.setAgreementTransferPolicy(bytes32(0), "agreement-denied");
         (ok, reason) = reg.canTransferAsset(id, address(this), address(1));
         assertTrue(ok);
         assertEqB32(reason, bytes32(0));
         (ok, reason) = reg.canTransferAgreement(id, address(this), address(1));
         assertFalse(ok);
-        assertEqB32(reason, bytes32("agreement-denied"));
+        assertEqB32(reason, "agreement-denied");
     }
 
     function test_TransferOwnership_EnforcesCurrentAssetHook() public {
@@ -918,14 +920,15 @@ contract IPAssetRegistryTest is TestBase {
         address to = address(0xBEEF);
         bytes32 argumentsHash = keccak256(abi.encode(id, address(this), to));
         policy.setAssetTransferPolicy(argumentsHash, bytes32(0));
-        policy.setAgreementTransferPolicy(bytes32(0), bytes32("agreement-denied"));
+        policy.setAgreementTransferPolicy(bytes32(0), "agreement-denied");
         (bool ok,) = reg.canTransferAsset(id, address(this), to);
         assertTrue(ok);
 
-        policy.setAssetTransferPolicy(argumentsHash, bytes32("asset-denied"));
+        policy.setAssetTransferPolicy(argumentsHash, "asset-denied");
         vmx.recordLogs();
+        bytes32 assetDenied = "asset-denied";
         vmx.expectRevert(
-            abi.encodeWithSelector(IIPAssetRegistry.HookDenied.selector, bytes32("asset-denied"))
+            abi.encodeWithSelector(IIPAssetRegistry.HookDenied.selector, assetDenied)
         );
         reg.transferOwnership(id, to);
         assertEqA(reg.ownerOf(id), address(this));
@@ -948,16 +951,17 @@ contract IPAssetRegistryTest is TestBase {
         bytes32 evidenceHash = _agreementEvidenceHash(id);
         bytes32 argumentsHash = keccak256(abi.encode(id, licensee, to));
         policy.setAgreementTransferPolicy(argumentsHash, bytes32(0));
-        policy.setAssetTransferPolicy(bytes32(0), bytes32("asset-denied"));
+        policy.setAssetTransferPolicy(bytes32(0), "asset-denied");
         (bool ok,) = reg.canTransferAgreement(id, licensee, to);
         assertTrue(ok);
 
-        policy.setAgreementTransferPolicy(argumentsHash, bytes32("agreement-denied"));
+        policy.setAgreementTransferPolicy(argumentsHash, "agreement-denied");
         vmx.recordLogs();
         vmx.prank(licensee);
+        bytes32 agreementDenied = "agreement-denied";
         vmx.expectRevert(
             abi.encodeWithSelector(
-                IIPAssetRegistry.HookDenied.selector, bytes32("agreement-denied")
+                IIPAssetRegistry.HookDenied.selector, agreementDenied
             )
         );
         reg.transferAgreement(id, to);
@@ -978,8 +982,8 @@ contract IPAssetRegistryTest is TestBase {
 
     function test_TransferHooks_DoNotGateExternalErc721Transfers() public {
         TransferPolicyRegistry policy = _useTransferPolicyRegistry();
-        policy.setAssetTransferPolicy(bytes32(0), bytes32("asset-denied"));
-        policy.setAgreementTransferPolicy(bytes32(0), bytes32("agreement-denied"));
+        policy.setAssetTransferPolicy(bytes32(0), "asset-denied");
+        policy.setAgreementTransferPolicy(bytes32(0), "agreement-denied");
         nft.mint(address(this), 1);
         bytes32 assetId = _registerErc721(address(nft), 1);
         bytes32 termsId = _registerTermsBasic(0, false);
@@ -1331,7 +1335,7 @@ contract IPAssetRegistryTest is TestBase {
 
     function test_Revoke_ByOwner() public {
         bytes32 ag = _grant(address(0x4444), true);
-        reg.revokeAgreement(ag, bytes32("dmca"));
+        reg.revokeAgreement(ag, "dmca");
         assertFalse(reg.isAgreementActive(ag));
     }
 
@@ -1377,15 +1381,15 @@ contract IPAssetRegistryTest is TestBase {
         bytes32 ag = _grant(address(0x4444), true);
         vmx.prank(address(0x9999));
         vmx.expectRevert(IPAssetRegistry.NotOwner.selector);
-        reg.revokeAgreement(ag, bytes32("x"));
+        reg.revokeAgreement(ag, "x");
     }
 
     function test_ForceRevoke_AdminOnly() public {
         bytes32 ag = _grant(address(0x4444), true);
         vmx.prank(address(0x9999));
         vmx.expectRevert(IPAssetRegistry.NotAdmin.selector);
-        reg.forceRevokeAgreement(ag, bytes32("x"));
-        reg.forceRevokeAgreement(ag, bytes32("ok")); // admin == this
+        reg.forceRevokeAgreement(ag, "x");
+        reg.forceRevokeAgreement(ag, "ok"); // admin == this
         assertFalse(reg.isAgreementActive(ag));
     }
 
@@ -1401,7 +1405,7 @@ contract IPAssetRegistryTest is TestBase {
         p.agreementTokenization = AgreementTokenization.NONE;
         bytes32 existingAgreement = reg.createAgreement(p);
 
-        reg.freezeAsset(id, bytes32("hold"));
+        reg.freezeAsset(id, "hold");
 
         assertTrue(reg.isAgreementActive(existingAgreement));
         assertTrue(reg.isActiveAgreementHolder(existingAgreement, id, address(0x2222)));
@@ -1418,7 +1422,7 @@ contract IPAssetRegistryTest is TestBase {
         vmx.expectRevert(IPAssetRegistry.AssetFrozenErr.selector);
         reg.acquireAgreement(id, t, "", bytes32(0));
 
-        reg.unfreezeAsset(id, bytes32("clear"));
+        reg.unfreezeAsset(id, "clear");
         vmx.prank(address(0x1111));
         bytes32 newAgreement = reg.acquireAgreement(id, t, "", bytes32(0));
         assertTrue(reg.isAgreementActive(newAgreement));
@@ -1426,9 +1430,9 @@ contract IPAssetRegistryTest is TestBase {
 
     function test_FreezeLicense_Deactivates() public {
         bytes32 ag = _grant(address(0x4444), true);
-        reg.freezeAgreement(ag, bytes32("hold"));
+        reg.freezeAgreement(ag, "hold");
         assertFalse(reg.isAgreementActive(ag));
-        reg.unfreezeAgreement(ag, bytes32("clear"));
+        reg.unfreezeAgreement(ag, "clear");
         assertTrue(reg.isAgreementActive(ag));
     }
 
@@ -1541,12 +1545,14 @@ contract IPAssetRegistryTest is TestBase {
             AgreementParams memory p;
             p.assetId = id;
             p.termsId = t;
+            // casting to uint160 is safe because 0x100 + i < 2**160 (i < 10)
+            // forge-lint: disable-next-line(unsafe-typecast)
             p.party = address(uint160(0x100 + i));
             p.agreementTokenization = AgreementTokenization.NONE;
             ags[i] = reg.createAgreement(p);
         }
         for (uint256 i; i < 10; i += 2) {
-            reg.revokeAgreement(ags[i], bytes32("x"));
+            reg.revokeAgreement(ags[i], "x");
         }
 
         assertEqU(reg.agreementCountOf(id), 10);

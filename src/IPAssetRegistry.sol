@@ -379,6 +379,8 @@ contract IPAssetRegistry is IIPAssetRegistry {
             rawOwner := mload(output)
         }
         if (!ok || returnSize != 32 || rawOwner > type(uint160).max) return address(0);
+        // casting to uint160 is safe because rawOwner <= type(uint160).max was checked above
+        // forge-lint: disable-next-line(unsafe-typecast)
         return address(uint160(rawOwner));
     }
 
@@ -798,6 +800,8 @@ contract IPAssetRegistry is IIPAssetRegistry {
             if (initialLicensee == address(0)) revert PartyRequired();
         }
 
+        // overflow guard only; validator influence on timestamp is irrelevant here
+        // forge-lint: disable-next-line(block-timestamp)
         if (block.timestamp > type(uint64).max) {
             revert AgreementExpiryOverflow(p.termsId);
         }
@@ -1009,6 +1013,8 @@ contract IPAssetRegistry is IIPAssetRegistry {
     function _activeLicensee(bytes32 agreementId) private view returns (address) {
         AgreementRecord storage g = _agreements[agreementId];
         if (!g.exists || g.revoked || g.frozen) return address(0);
+        // expiry is coarse-grained; seconds of validator drift are acceptable
+        // forge-lint: disable-next-line(block-timestamp)
         if (g.expiry != 0 && block.timestamp >= g.expiry) return address(0);
         return _licenseeOf(agreementId);
     }

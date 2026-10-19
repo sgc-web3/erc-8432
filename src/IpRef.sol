@@ -111,10 +111,10 @@ library IpRef {
             if (data[i] != prefix[i]) revert InvalidPrefix();
         }
 
-        uint256 colon = _indexOf(data, bytes1(":"), prefix.length);
+        uint256 colon = _indexOf(data, ":", prefix.length);
         if (colon == type(uint256).max) revert MissingChainSeparator();
 
-        uint256 slash = _indexOf(data, bytes1("/"), colon + 1);
+        uint256 slash = _indexOf(data, "/", colon + 1);
         if (slash == type(uint256).max) revert MissingIdSeparator();
 
         chainId = _parseDecimal(data, prefix.length, colon);
@@ -161,9 +161,9 @@ library IpRef {
             if (data[i] != prefix[i]) return (false, 0, address(0), bytes32(0));
         }
 
-        uint256 colon = _indexOf(data, bytes1(":"), prefix.length);
+        uint256 colon = _indexOf(data, ":", prefix.length);
         if (colon == type(uint256).max) return (false, 0, address(0), bytes32(0));
-        uint256 slash = _indexOf(data, bytes1("/"), colon + 1);
+        uint256 slash = _indexOf(data, "/", colon + 1);
         if (slash == type(uint256).max) return (false, 0, address(0), bytes32(0));
         if (slash - colon - 1 != 42) return (false, 0, address(0), bytes32(0));
         if (data.length - slash - 1 != 66) return (false, 0, address(0), bytes32(0));
@@ -175,6 +175,8 @@ library IpRef {
         (bool okId, uint256 v) = _tryParseHex(data, slash + 1, data.length, 32);
         if (!okId) return (false, 0, address(0), bytes32(0));
 
+        // casting to uint160 is safe because _tryParseHex(..., 20) yields at most 20 bytes
+        // forge-lint: disable-next-line(unsafe-typecast)
         return (true, c, address(uint160(r)), bytes32(v));
     }
 
@@ -286,6 +288,8 @@ library IpRef {
         out[0] = "0";
         out[1] = "x";
         for (uint256 i = 0; i < byteLen; ++i) {
+            // truncating to uint8 is intentional: extracts a single byte
+            // forge-lint: disable-next-line(unsafe-typecast)
             uint8 b = uint8(value >> (8 * (byteLen - 1 - i)));
             out[2 + 2 * i]     = _nibbleToHex(b >> 4);
             out[2 + 2 * i + 1] = _nibbleToHex(b & 0x0f);

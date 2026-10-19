@@ -73,16 +73,16 @@ contract SchemaHashTest is TestBase {
         uint256 start = _indexOf(document, SCHEMA_PREFIX, 0);
         if (
             start == type(uint256).max
-                || (start != 0 && document[start - 1] != bytes1("\n"))
+                || (start != 0 && document[start - 1] != "\n")
                 || _indexOf(document, SCHEMA_PREFIX, start + SCHEMA_PREFIX.length)
                     != type(uint256).max
         ) revert InvalidSchemaLine();
 
         uint256 end = start;
-        while (end < document.length && document[end] != bytes1("\n") && document[end] != bytes1("\r")) {
+        while (end < document.length && document[end] != "\n" && document[end] != "\r") {
             ++end;
         }
-        if (document[end - 1] != bytes1("}")) revert InvalidSchemaLine();
+        if (document[end - 1] != "}") revert InvalidSchemaLine();
         schema = new bytes(end - start);
         for (uint256 i = 0; i < schema.length; ++i) schema[i] = document[start + i];
     }
