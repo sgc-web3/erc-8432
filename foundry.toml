@@ -1,2 +1,33 @@
 [profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+test = "test"
+script = "script"
+
+solc_version = "0.8.20"
+optimizer = true
+optimizer_runs = 200
+via_ir = false
+
+# Match the canonical Solidity files which are licensed CC0-1.0.
+auto_detect_solc = false
+remappings = []
+
+# Surface unused parameters in interfaces / drafts as warnings only (don't fail the build).
+deny = "never"
+
+# Read-only access for tests that hash the canonical schema embedded in the draft.
 fs_permissions = [{ access = "read", path = "./docs" }]
+
+# Foundry test settings (no tests yet, but reserved).
+verbosity = 2
+fuzz = { runs = 256 }
+
+[fmt]
+line_length = 100
+tab_width = 4
+bracket_spacing = true
+int_types = "long"
+quote_style = "double"
+number_underscore = "thousands"
